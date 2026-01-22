@@ -6,31 +6,71 @@
     <title>Eng.Makram_Salah عمك</title>
     <style>
         :root { --accent: #00d2ff; --bg: #0b0e14; }
+        
         body {
-            margin: 0; padding: 20px; background: var(--bg); color: white;
-            font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center;
+            margin: 0; padding: 10px; background: var(--bg); color: white;
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
         }
-        .brand { font-size: 1.6rem; font-weight: bold; color: var(--accent); margin-bottom: 20px; text-shadow: 0 0 15px var(--accent); }
+
+        .brand { 
+            font-size: clamp(1.2rem, 5vw, 1.8rem); /* حجم خط مرن للموبايل واللاب */
+            font-weight: bold; color: var(--accent); 
+            margin: 20px 0; text-shadow: 0 0 15px var(--accent); 
+            text-align: center;
+        }
+
         .container {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(12px);
-            padding: 25px; border-radius: 25px; width: 100%; max-width: 650px;
-            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: clamp(15px, 4vw, 25px); border-radius: 20px; 
+            width: 95%; max-width: 650px; /* يعرض بعرض الشاشة في الموبايل */
+            border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-sizing: border-box;
         }
+
         input {
-            width: 100%; padding: 18px; background: rgba(0,0,0,0.4); border: 2px solid #1e293b;
-            border-radius: 15px; color: white; font-size: 1.3rem; outline: none; text-align: center;
-            transition: 0.3s;
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.4); 
+            border: 2px solid #1e293b; border-radius: 15px; 
+            color: white; font-size: clamp(1rem, 4vw, 1.3rem); 
+            outline: none; text-align: center;
+            transition: 0.3s; box-sizing: border-box;
         }
         input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,210,255,0.2); }
-        .results { margin-top: 25px; display: grid; gap: 10px; max-height: 500px; overflow-y: auto; padding-left: 10px; }
-        .item {
-            background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05);
+
+        .results { 
+            margin-top: 25px; display: grid; gap: 10px; 
+            max-height: 60vh; /* يضبط الطول حسب طول الشاشة المتوفر */
+            overflow-y: auto; padding-left: 5px; 
         }
-        .text { font-size: 1.4rem; font-family: 'Consolas', 'Monaco', monospace; }
-        button.copy { background: var(--accent); color: #000; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.2s; }
+
+        .item {
+            background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px;
+            display: flex; flex-direction: column; /* للموبايل: العناصر فوق بعض */
+            align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* تعديل للمراوح (الشاشات الكبيرة) */
+        @media (min-width: 600px) {
+            .item { flex-direction: row; justify-content: space-between; padding: 15px; }
+        }
+
+        .text { 
+            font-size: clamp(1.1rem, 4.5vw, 1.4rem); 
+            font-family: 'Consolas', 'Monaco', monospace; 
+            word-break: break-all; text-align: center;
+        }
+
+        button.copy { 
+            background: var(--accent); color: #000; border: none; 
+            padding: 8px 15px; border-radius: 8px; cursor: pointer; 
+            font-weight: 800; transition: 0.2s; 
+            width: 100%; max-width: 200px; font-size: 0.9rem;
+        }
         button.copy:hover { transform: scale(1.05); opacity: 0.9; }
-        ::-webkit-scrollbar { width: 6px; }
+
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
     </style>
 </head>
@@ -39,22 +79,16 @@
     <div class="brand">Eng.Makram_Salah😎☝️</div>
     
     <div class="container">
-        <input type="text" id="userInput" placeholder="اتنيل اكتب الاسم  هنا " oninput="generateFonts()">
+        <input type="text" id="userInput" placeholder="اتنيل اكتب الاسم هنا " oninput="generateFonts()">
         <div class="results" id="output"></div>
     </div>
 
     <script>
-        // تعريف أطقم الحروف الكاملة (كبير وصغير)
         const fullAlphaSets = [
-            // 1. Double Struck (𝔹𝕠𝕝𝕕)
             {A:"𝔸",B:"𝔹",C:"ℂ",D:"𝔻",E:"𝔼",F:"𝔽",G:"𝔾",H:"ℍ",I:"𝕀",J:"𝕁",K:"𝕂",L:"𝕃",M:"𝕄",N:"ℕ",O:"𝕆",P:"ℙ",Q:"ℚ",R:"ℝ",S:"𝕊",T:"𝕋",U:"𝕌",V:"𝕍",W:"𝕎",X:"𝕏",Y:"𝕐",Z:"ℤ",a:"𝕒",b:"𝕓",c:"𝕔",d:"𝕕",e:"𝕖",f:"𝕗",g:"𝕘",h:"𝕙",i:"𝕚",j:"𝕛",k:"𝕜",l:"𝕝",m:"𝕞",n:"𝕟",o:"𝕠",p:"𝕡",q:"𝕢",r:"𝕣",s:"𝕤",t:"𝕥",u:"𝕦",v:"𝕧",w:"𝕨",x:"𝕩",y:"𝕪",z:"𝕫"},
-            // 2. Bold Script (𝓑𝓸𝓵𝓭)
             {A:"𝓐",B:"𝓑",C:"𝓒",D:"𝓓",E:"𝓔",F:"𝓕",G:"𝓖",H:"𝓗",I:"𝓘",J:"𝓙",K:"𝓚",L:"𝓛",M:"𝓜",N:"𝓝",O:"𝓞",P:"𝓟",Q:"𝓠",R:"𝓡",S:"𝓢",T:"𝓣",U:"𝓤",V:"𝓥",W:"𝓦",X:"𝓧",Y:"𝓨",Z:"𝓩",a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
-            // 3. Bold Serif (𝐁𝐨𝐥𝐝)
-            {A:"𝐀",B:"𝐁",C:"𝐂",D:"𝐃",E:"𝐄",F:"𝐅",G:"𝐆",H:"𝐇",I:"𝐈",J:"𝐉",K:"𝐊",L:"𝐋",M:"𝐌",N:"𝐍",O:"𝐎",P:"𝐏",Q:"𝐐",R:"𝐑",S:"𝐒",T:"𝐓",U:"𝐔",V:"𝐕",W:"𝐖",X:"𝐗",Y:"𝐘",Z:"𝐙",a:"𝐚",b:"𝐛",c:"𝐜",d:"𝐝",e:"𝐞",f:"𝐟",g:"𝐠",h:"𝐡",i:"𝐢",j:"𝐣",k:"𝐤",l:"𝐥",m:"𝐦",n:"𝐧",o:"𝐨",p:"𝐩",q:"𝐪",r:"𝐫",s:"𝐬",t:"𝐭",u:"𝐮",v:"𝐯",w:"𝐰",x:"𝐱",y:"𝐲",z:"𝐳"},
-            // 4. Sans-Serif (𝗕𝗼𝗹𝗱)
+            {A:"𝐀",B:"𝐁",C:"𝐂",D:"𝐃",E:"𝐄",F:"𝐅",G:"𝐆",H:"𝐇",I:"𝐈",J:"",K:"𝐊",L:"𝐋",M:"𝐌",N:"𝐍",O:"𝐎",P:"𝐏",Q:"𝐐",R:"𝐑",S:"𝐒",T:"𝐓",U:"𝐔",V:"𝐕",W:"𝐖",X:"𝐗",Y:"𝐘",Z:"𝐙",a:"𝐚",b:"𝐛",c:"𝐜",d:"𝐝",e:"𝐞",f:"𝐟",g:"𝐠",h:"𝐡",i:"𝐢",j:"𝐣",k:"𝐤",l:"𝐥",m:"𝐦",n:"𝐧",o:"𝐨",p:"𝐩",q:"𝐪",r:"𝐫",s:"𝐬",t:"𝐭",u:"𝐮",v:"𝐯",w:"𝐰",x:"𝐱",y:"𝐲",z:"𝐳"},
             {A:"𝗔",B:"𝗕",C:"𝗖",D:"𝗗",E:"𝗘",F:"𝗙",G:"𝗚",H:"𝗛",I:"𝗜",J:"𝗝",K:"𝗞",L:"𝗟",M:"𝗠",N:"𝗡",O:"𝗢",P:"𝗣",Q:"𝗤",R:"𝗥",S:"𝗦",T:"𝗧",U:"𝗨",V:"𝗩",W:"𝗪",X:"𝗫",Y:"𝗬",Z:"𝗭",a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
-            // 5. Fraktur (𝔅𝔬𝔩𝔡)
             {A:"𝔄",B:"𝔅",C:"ℭ",D:"𝔇",E:"𝔈",F:"𝔉",G:"𝔊",H:"ℌ",I:"ℑ",J:"𝔍",K:"𝔎",L:"𝔏",M:"𝔐",N:"𝔑",O:"𝔒",P:"𝔓",Q:"𝔔",R:"ℜ",S:"𝔖",T:"𝔗",U:"𝔘",V:"𝔙",W:"𝔚",X:"𝔛",Y:"𝔜",Z:"ℨ",a:"𝔞",b:"𝔟",c:"𝔴",d:"𝔡",e:"𝔢",f:"𝔣",g:"𝔤",h:"𝔥",i:"𝔦",j:"𝔧",k:"𝔨",l:"𝔩",m:"𝔪",n:"𝔫",o:"𝔬",p:"𝔭",q:"𝔮",r:"𝔯",s:"𝔰",t:"𝔱",u:"𝔲",v:"𝔳",w:"𝔴",x:"𝔵",y:"𝔶",z:"𝔷"}
         ];
 
@@ -64,17 +98,14 @@
             output.innerHTML = "";
             if (!input) return;
 
-            // 1. عرض الأطقم الكاملة الأساسية
             fullAlphaSets.forEach(set => {
                 let res = input.split('').map(char => set[char] || char).join('');
                 add(res);
             });
 
-            // 2. توليد 500 شكل هجين (ثابت لكل سطر)
             for (let i = 0; i < 495; i++) {
                 let styledResult = "";
                 for (let char of input) {
-                    // اختيار طقم حروف عشوائي ولكنه "ثابت" لهذا السطر بناءً على قيمة i
                     const randomSet = fullAlphaSets[(i + char.charCodeAt(0)) % fullAlphaSets.length];
                     styledResult += randomSet[char] || char;
                 }
@@ -85,15 +116,25 @@
         function add(text) {
             const div = document.createElement('div');
             div.className = 'item';
-            div.innerHTML = `<span class="text">${text}</span><button class="copy" onclick="copyText(this, '${text}')">انسخ الزرار مبيكهربش</button>`;
+            div.innerHTML = `<span class="text">${text}</span><button class="copy" onclick="copyText(this, '${text}')">الزرار مبيكهربش</button>`;
             document.getElementById('output').appendChild(div);
         }
 
         function copyText(btn, text) {
-            navigator.clipboard.writeText(text);
+            navigator.clipboard.writeText(text).catch(err => {
+                // حل بديل للموبايلات القديمة
+                const t = document.createElement("textarea");
+                t.value = text; document.body.appendChild(t);
+                t.select(); document.execCommand("copy");
+                document.body.removeChild(t);
+            });
+            
             btn.innerText = "مبروك";
             btn.style.background = "#fff";
-            setTimeout(() => { btn.innerText = "اتنسخ اخلص وبطل صداع"; btn.style.background = "var(--accent)"; }, 1000);
+            setTimeout(() => { 
+                btn.innerText = "اتنسخ اخلص وبطل صداع"; 
+                btn.style.background = "var(--accent)"; 
+            }, 1000);
         }
     </script>
 </body>
